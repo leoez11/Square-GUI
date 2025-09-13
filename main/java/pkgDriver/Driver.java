@@ -1,4 +1,6 @@
 package pkgDriver;
+
+
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
@@ -10,6 +12,8 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.*;
+
+
 public class Driver {
     GLFWErrorCallback errorCallback;
     GLFWKeyCallback keyCallback;
@@ -18,30 +22,15 @@ public class Driver {
     static int WIN_WIDTH = 800, WIN_HEIGHT = 800;
     int WIN_POS_X = 30, WIN_POX_Y = 90;
     private static final int OGL_MATRIX_SIZE = 16;
+    // call glCreateProgram() here - we have no gl-context here
     int shader_program;
     Matrix4f viewProjMatrix = new Matrix4f();
     FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(OGL_MATRIX_SIZE);
     int vpMatLocation = 0, renderColorLocation = 0;
-    private static final float SQUARE_SIZE = 20f;
-    private static final float VIEW_LEFT = -100;
-    private static final float VIEW_RIGHT = 100;
-    private static final float VIEW_BOTTOM = -100;
-    private static final float VIEW_TOP = 100;
-    private static final float VIEW_NEAR = 0;
-    private static final float VIEW_FAR = 10;
-    private static final float SQUARE_TRANSLATE_X = 20f;
-    private static final float SQUARE_TRANSLATE_Y = 20f;
-    private static final float BACKGROUND_COLOR_R = 0.0f;
-    private static final float BACKGROUND_COLOR_G = 0.0f;
-    private static final float BACKGROUND_COLOR_B = 1.0f;
-    private static final float BACKGROUND_COLOR_A = 1.0f;
-    private static final float SQUARE_COLOR_R = 1.0f;
-    private static final float SQUARE_COLOR_G = 0.5f;
-    private static final float SQUARE_COLOR_B = 0.7f;
-    private static final float SQUARE_COLOR_A = 1.0f;
+
     public static void main(String[] myArgs) {
         new Driver().render();
-    }
+    } // public static void main(String[] args)
     void render() {
         try {
             initGLFWindow();
@@ -53,9 +42,10 @@ public class Driver {
             glfwTerminate();
             glfwSetErrorCallback(null).free();
         }
-    }
+    } // void render()
     private void initGLFWindow() {
-        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
+        glfwSetErrorCallback(errorCallback =
+                GLFWErrorCallback.createPrint(System.err));
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
         glfwDefaultWindowHints();
@@ -67,37 +57,39 @@ public class Driver {
             throw new RuntimeException("Failed to create the GLFW window");
         glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
             @Override
-            public void invoke(long window, int key, int scancode, int action, int mods) {
+            public void invoke(long window, int key, int scancode, int action, int
+                    mods) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                     glfwSetWindowShouldClose(window, true);
             }
         });
-        glfwSetFramebufferSizeCallback(window, fbCallback = new GLFWFramebufferSizeCallback() {
-            @Override
-            public void invoke(long window, int w, int h) {
-                if (w > 0 && h > 0) {
-                    WIN_WIDTH = w;
-                    WIN_HEIGHT = h;
-                }
-            }
-        });
+        glfwSetFramebufferSizeCallback(window, fbCallback = new
+                GLFWFramebufferSizeCallback() {
+                    @Override
+                    public void invoke(long window, int w, int h) {
+                        if (w > 0 && h > 0) {
+                            WIN_WIDTH = w;
+                            WIN_HEIGHT = h;
+                        }
+                    }
+                });
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, WIN_POS_X, WIN_POX_Y);
         glfwMakeContextCurrent(window);
-        glfwSwapInterval(1);
+        int VSYNC_INTERVAL = 1;
+        glfwSwapInterval(VSYNC_INTERVAL);
         glfwShowWindow(window);
-    }
+    } // private void initGLFWindow()
     void renderLoop() {
         initOpenGL();
-        initBuffers();
-        drawScene();
-    }
+        renderObjects();
+    } // void renderLoop()
     void initOpenGL() {
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
-        glClearColor(BACKGROUND_COLOR_R, BACKGROUND_COLOR_G, BACKGROUND_COLOR_B, BACKGROUND_COLOR_A);
+        glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
         this.shader_program = glCreateProgram();
         int vs = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vs,
@@ -111,23 +103,19 @@ public class Driver {
         glShaderSource(fs,
                 "uniform vec3 color;" +
                         "void main(void) {" +
-                        " gl_FragColor = vec4(" + SQUARE_COLOR_R + ", " + SQUARE_COLOR_G + ", " + SQUARE_COLOR_B + ", " + SQUARE_COLOR_A + ");" +
+                        " gl_FragColor = vec4(0.7f, 0.5f, 0.1f, 1.0f);" +
                         "}");
         glCompileShader(fs);
         glAttachShader(shader_program, fs);
         glLinkProgram(shader_program);
         glUseProgram(shader_program);
         vpMatLocation = glGetUniformLocation(shader_program, "viewProjMatrix");
-    }
-    void initBuffers() {
+        return;
+    } // void initOpenGL()
+    void renderObjects() {
         int vbo = glGenBuffers();
         int ibo = glGenBuffers();
-        float[] vertices = {
-                -SQUARE_SIZE, -SQUARE_SIZE,
-                SQUARE_SIZE, -SQUARE_SIZE,
-                SQUARE_SIZE,  SQUARE_SIZE,
-                -SQUARE_SIZE,  SQUARE_SIZE
-        };
+        float[] vertices = {-20f, -20f, 20f, -20f, 20f, 20f, -20f, 20f};
         int[] indices = {0, 1, 2, 0, 2, 3};
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) BufferUtils.
@@ -139,22 +127,20 @@ public class Driver {
                 createIntBuffer(indices.length).
                 put(indices).flip(), GL_STATIC_DRAW);
         glVertexPointer(2, GL_FLOAT, 0, 0L);
-    }
-    void drawScene() {
+        viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10);
+        glUniformMatrix4fv(vpMatLocation, false,
+                viewProjMatrix.get(myFloatBuffer));
+        glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            drawSquares();
+
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
             glfwSwapBuffers(window);
         }
-    }
-    void drawSquares() {
-        drawSquare(-SQUARE_TRANSLATE_X, SQUARE_TRANSLATE_Y);
-        drawSquare(SQUARE_TRANSLATE_X, -SQUARE_TRANSLATE_Y);
-    }
-    void drawSquare(float x, float y) {
-        viewProjMatrix.setOrtho(VIEW_LEFT, VIEW_RIGHT, VIEW_BOTTOM, VIEW_TOP, VIEW_NEAR, VIEW_FAR).translate(x, y, 0);
-        glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
-    }
+    } // renderObjects
 }
+
+
