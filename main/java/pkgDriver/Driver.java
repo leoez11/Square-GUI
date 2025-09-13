@@ -103,7 +103,7 @@ public class Driver {
         glShaderSource(fs,
                 "uniform vec3 color;" +
                         "void main(void) {" +
-                        " gl_FragColor = vec4(0.7f, 0.5f, 0.1f, 1.0f);" +
+                        " gl_FragColor = vec4(1.0f, 0.5f, 0.7f, 1.0f);"  +
                         "}");
         glCompileShader(fs);
         glAttachShader(shader_program, fs);
