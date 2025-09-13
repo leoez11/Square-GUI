@@ -127,19 +127,20 @@ public class Driver {
                 createIntBuffer(indices.length).
                 put(indices).flip(), GL_STATIC_DRAW);
         glVertexPointer(2, GL_FLOAT, 0, 0L);
-        viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10);
-        glUniformMatrix4fv(vpMatLocation, false,
-                viewProjMatrix.get(myFloatBuffer));
-        glUniform3f(renderColorLocation, 1.0f, 0.498f, 0.153f);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        int VTD = 6; // need to process 6 Vertices To Draw 2 triangles
+        glVertexPointer(2, GL_FLOAT, 0, 0L);
+
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+            // Draw first square
+            viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10).translate(-20, 20, 0);
+            glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
+            // Draw second square
+
             glfwSwapBuffers(window);
         }
+
     } // renderObjects
 }
 
