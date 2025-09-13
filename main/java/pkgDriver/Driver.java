@@ -137,7 +137,9 @@ public class Driver {
             glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
             // Draw second square
-
+            viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10).translate(20, -20, 0);
+            glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
             glfwSwapBuffers(window);
         }
 
