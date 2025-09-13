@@ -50,7 +50,8 @@ public class Driver {
     int vpMatLocation = 0, renderColorLocation = 0;
 
     public static void main(String[] myArgs) {
-        new Dri
+        new Driver().render();
+    } 
     void render() {
         try {
             initGLFWindow();
