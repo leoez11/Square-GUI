@@ -25,6 +25,18 @@ public class Driver {
     // call glCreateProgram() here - we have no gl-context here
     int shader_program;
     Matrix4f viewProjMatrix = new Matrix4f();
+
+    private static final float SQUARE_SIZE = 20f;
+    private static final float VIEW_LEFT = -100;
+    private static final float VIEW_RIGHT = 100;
+    private static final float VIEW_BOTTOM = -100;
+    private static final float VIEW_TOP = 100;
+    private static final float VIEW_NEAR = 0;
+    private static final float VIEW_FAR = 10;
+    private static final float SQUARE_TRANSLATE_X = 20f;
+    private static final float SQUARE_TRANSLATE_Y = 20f;
+
+
     FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(OGL_MATRIX_SIZE);
     int vpMatLocation = 0, renderColorLocation = 0;
 
