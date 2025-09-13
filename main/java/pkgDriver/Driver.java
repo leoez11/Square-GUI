@@ -41,7 +41,10 @@ public class Driver {
     private static final float BACKGROUND_COLOR_B = 1.0f;
     private static final float BACKGROUND_COLOR_A = 1.0f;
 
-
+    private static final float SQUARE_COLOR_R = 1.0f;
+    private static final float SQUARE_COLOR_G = 0.5f;
+    private static final float SQUARE_COLOR_B = 0.7f;
+    private static final float SQUARE_COLOR_A = 1.0f;
 
     FloatBuffer myFloatBuffer = BufferUtils.createFloatBuffer(OGL_MATRIX_SIZE);
     int vpMatLocation = 0, renderColorLocation = 0;
