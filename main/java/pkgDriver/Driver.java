@@ -97,14 +97,15 @@ public class Driver {
         GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, WIN_POS_X, WIN_POX_Y);
         glfwMakeContextCurrent(window);
-        int VSYNC_INTERVAL = 1;
-        glfwSwapInterval(VSYNC_INTERVAL);
+        glfwSwapInterval(1);
         glfwShowWindow(window);
     } // private void initGLFWindow()
     void renderLoop() {
         initOpenGL();
-        renderObjects();
-    } // void renderLoop()
+        initBuffers();
+        drawScene();
+    }
+     // void renderLoop()
     void initOpenGL() {
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
@@ -131,12 +132,17 @@ public class Driver {
         glLinkProgram(shader_program);
         glUseProgram(shader_program);
         vpMatLocation = glGetUniformLocation(shader_program, "viewProjMatrix");
-        return;
-    } // void initOpenGL()
-    void renderObjects() {
+    }
+
+    void initBuffers() {
         int vbo = glGenBuffers();
         int ibo = glGenBuffers();
-        float[] vertices = {-20f, -20f, 20f, -20f, 20f, 20f, -20f, 20f};
+        float[] vertices = {
+                -SQUARE_SIZE, -SQUARE_SIZE,
+                SQUARE_SIZE, -SQUARE_SIZE,
+                SQUARE_SIZE,  SQUARE_SIZE,
+                -SQUARE_SIZE,  SQUARE_SIZE
+        };
         int[] indices = {0, 1, 2, 0, 2, 3};
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, (FloatBuffer) BufferUtils.
@@ -148,23 +154,29 @@ public class Driver {
                 createIntBuffer(indices.length).
                 put(indices).flip(), GL_STATIC_DRAW);
         glVertexPointer(2, GL_FLOAT, 0, 0L);
-        glVertexPointer(2, GL_FLOAT, 0, 0L);
+    }
 
+    void drawScene() {
         while (!glfwWindowShouldClose(window)) {
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            // Draw first square
-            viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10).translate(-20, 20, 0);
-            glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
-            // Draw second square
-            viewProjMatrix.setOrtho(-100, 100, -100, 100, 0, 10).translate(20, -20, 0);
-            glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
+
+            drawSquares();
+
             glfwSwapBuffers(window);
         }
+    }
 
-    } // renderObjects
+    void drawSquares() {
+        drawSquare(-SQUARE_TRANSLATE_X, SQUARE_TRANSLATE_Y);
+        drawSquare(SQUARE_TRANSLATE_X, -SQUARE_TRANSLATE_Y);
+    }
+
+    void drawSquare(float x, float y) {
+        viewProjMatrix.setOrtho(VIEW_LEFT, VIEW_RIGHT, VIEW_BOTTOM, VIEW_TOP, VIEW_NEAR, VIEW_FAR).translate(x, y, 0);
+        glUniformMatrix4fv(vpMatLocation, false, viewProjMatrix.get(myFloatBuffer));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0L);
+    }
 }
 
 
