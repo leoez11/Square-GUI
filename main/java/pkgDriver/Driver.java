@@ -51,7 +51,7 @@ public class Driver {
 
     public static void main(String[] myArgs) {
         new Driver().render();
-    } 
+    }
     void render() {
         try {
             initGLFWindow();
